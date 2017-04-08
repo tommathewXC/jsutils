@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+
+  <!-- A simple example of WebSockets Using GeminiConnector, TableBuilder, and HtmlBuilder -->
+
+  <meta charset="utf-8" />
+  <title>Gemini CryptoMarkets</title>
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <script language="javascript" type="text/javascript" src="../js/GeminiConnector.js"></script>
+  <script language="javascript" type="text/javascript" src="../js/HtmlBuilder.js"></script>
+  <script language="javascript" type="text/javascript" src="../js/TableBuilder.js"></script>
+  <script type="text/javascript">
+
+    /**
+      Fucntion that dynamically generates a Table and places it into "tableholder"
+    **/
+    function place(type, id){
+      let options = {
+        tableClass: 'table',
+        body: {
+          tdClass: 'datarow'
+        }
+      };
+      let headers = ['Type', 'Reason', 'Price', 'Delta', 'Remaining', 'Side', 'Last Update Time'];
+      let data = [['','','','','','','']];
+      let table = new TableBuilder(headers, options, data, type);
+      let html = table.get();
+      let $tH = $('#'+id);
+      let header = new HtmlBuilder('h3', String(type)+' Table', {}).build();
+      $tH.html($tH.html()+header + html);
+    }
+
+    $(document).ready(function(){
+      /// place the three dynamic tables
+      place('Initial', 'tableholder');
+      place('Cancel', 'tableholder');
+      place('Place', 'tableholder');
+      var newObj = new GeminiConnector("wss://api.gemini.com/v1/marketdata/BTCUSD", "GeminiConnector");
+      $('#start').click(function(){
+        newObj.initiate();
+      });
+    });
+  </script>
+  <div id="main" class="container">
+    <h2>Gemini CryptoMarkets</h2>
+    <button class="btn btn-success" id="start">Start</button>
+    <div id="tableholder">
+    </div>
+  </div>
